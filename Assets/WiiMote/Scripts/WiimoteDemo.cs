@@ -7,7 +7,7 @@ using WiimoteApi;
 
 public class WiimoteDemo : MonoBehaviour {
 
-    public WiimoteModel model;
+    //public WiimoteModel model;
     public RectTransform[] ir_dots;
     public RectTransform[] ir_bb;
     public RectTransform ir_pointer;
@@ -21,13 +21,38 @@ public class WiimoteDemo : MonoBehaviour {
     public Vector3 wmpOffset = Vector3.zero;
 
     void Start() {
-        initial_rotation = model.rot.localRotation;
-    }
 
-	void Update () {
+        WiimoteManager.FindWiimotes();
         if (!WiimoteManager.HasWiimote()) { return; }
 
         wiimote = WiimoteManager.Wiimotes[0];
+        if (wiimote.current_ext == ExtensionController.MOTIONPLUS)
+        {
+            MotionPlusData data = wiimote.MotionPlus;
+            data.SetZeroValues();
+        }
+
+        wiimote.SetupIRCamera(IRDataType.BASIC);
+
+        wiimote.RequestIdentifyWiiMotionPlus();
+        wiimote.ActivateWiiMotionPlus();
+
+        wmpOffset = Vector3.zero;
+        //initial_rotation = model.rot.localRotation;
+    }
+
+    void ResetWMP()
+    {
+        wiimote.RequestIdentifyWiiMotionPlus();
+        wiimote.ActivateWiiMotionPlus();
+    }
+
+	void Update () {
+
+        if (wiimote.Button.plus)
+        {
+            ResetWMP();
+        }
 
         int ret;
         do
@@ -40,28 +65,28 @@ public class WiimoteDemo : MonoBehaviour {
                                                 wiimote.MotionPlus.RollSpeed) / 144f; // Divide by 95Hz (average updates per second from wiimote)
                 wmpOffset += offset;
 
-                model.rot.Rotate(offset, Space.Self);
+                //model.rot.Rotate(offset, Space.Self);
             }
         } while (ret > 0);
 
-        model.a.enabled = wiimote.Button.a;
-        model.b.enabled = wiimote.Button.b;
-        model.one.enabled = wiimote.Button.one;
-        model.two.enabled = wiimote.Button.two;
-        model.d_up.enabled = wiimote.Button.d_up;
-        model.d_down.enabled = wiimote.Button.d_down;
-        model.d_left.enabled = wiimote.Button.d_left;
-        model.d_right.enabled = wiimote.Button.d_right;
-        model.plus.enabled = wiimote.Button.plus;
-        model.minus.enabled = wiimote.Button.minus;
-        model.home.enabled = wiimote.Button.home;
+      // model.a.enabled = wiimote.Button.a;
+      // model.b.enabled = wiimote.Button.b;
+      // model.one.enabled = wiimote.Button.one;
+      // model.two.enabled = wiimote.Button.two;
+      // model.d_up.enabled = wiimote.Button.d_up;
+      // model.d_down.enabled = wiimote.Button.d_down;
+      // model.d_left.enabled = wiimote.Button.d_left;
+      // model.d_right.enabled = wiimote.Button.d_right;
+      // model.plus.enabled = wiimote.Button.plus;
+      // model.minus.enabled = wiimote.Button.minus;
+      // model.home.enabled = wiimote.Button.home;
 
         if (wiimote.current_ext != ExtensionController.MOTIONPLUS)
-            model.rot.localRotation = initial_rotation;
+            //model.rot.localRotation = initial_rotation;
 
         if (ir_dots.Length < 4) return;
 
-        float[,] ir = wiimote.Ir.GetProbableSensorBarIR();
+        /*float[,] ir = wiimote.Ir.GetProbableSensorBarIR();
         for (int i = 0; i < 2; i++)
         {
             float x = (float)ir[i, 0] / 1023f;
@@ -84,14 +109,14 @@ public class WiimoteDemo : MonoBehaviour {
                 ir_bb[i].anchorMin = new Vector2(xmin, ymin);
                 ir_bb[i].anchorMax = new Vector2(xmax, ymax);
             }
-        }
+        }*/
 
-        float[] pointer = wiimote.Ir.GetPointingPosition();
-        ir_pointer.anchorMin = new Vector2(pointer[0], pointer[1]);
-        ir_pointer.anchorMax = new Vector2(pointer[0], pointer[1]);
+       // float[] pointer = wiimote.Ir.GetPointingPosition();
+        //ir_pointer.anchorMin = new Vector2(pointer[0], pointer[1]);
+        //ir_pointer.anchorMax = new Vector2(pointer[0], pointer[1]);
 	}
 
-    void OnGUI()
+   /* void OnGUI()
     {
         GUI.Box(new Rect(0,0,320,Screen.height), "");
 
@@ -224,10 +249,11 @@ public class WiimoteDemo : MonoBehaviour {
                 if (GUILayout.Button("Zero Out WMP"))
                 {
                     data.SetZeroValues();
-                    model.rot.rotation = Quaternion.FromToRotation(model.rot.rotation*GetAccelVector(), Vector3.up) * model.rot.rotation;
-                    model.rot.rotation = Quaternion.FromToRotation(model.rot.forward, Vector3.forward) * model.rot.rotation;
+                    //model.rot.rotation = Quaternion.FromToRotation(model.rot.rotation*GetAccelVector(), Vector3.up) * model.rot.rotation;
+                    //model.rot.rotation = Quaternion.FromToRotation(model.rot.forward, Vector3.forward) * model.rot.rotation;
                 }
                 if(GUILayout.Button("Reset Offset"))
+
                     wmpOffset = Vector3.zero;
                 GUILayout.Label("Offset: " + wmpOffset.ToString());
             }
@@ -278,14 +304,14 @@ public class WiimoteDemo : MonoBehaviour {
             scrollPosition = Vector2.zero;
         }
         GUILayout.EndVertical();
-    }
+    } */
 
     void OnDrawGizmos()
     {
         if (wiimote == null) return;
 
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(model.rot.position, model.rot.position + model.rot.rotation*GetAccelVector()*2);
+        //Gizmos.DrawLine(model.rot.position, model.rot.position + model.rot.rotation*GetAccelVector()*2);
     }
 
     private Vector3 GetAccelVector()
@@ -302,8 +328,8 @@ public class WiimoteDemo : MonoBehaviour {
         return new Vector3(accel_x, accel_y, accel_z).normalized;
     }
 
-    [System.Serializable]
-    public class WiimoteModel
+   // [System.Serializable]
+   /* public class WiimoteModel
     {
         public Transform rot;
         public Renderer a;
@@ -317,7 +343,7 @@ public class WiimoteDemo : MonoBehaviour {
         public Renderer plus;
         public Renderer minus;
         public Renderer home;
-    }
+    }*/
 
 	void OnApplicationQuit() {
 		if (wiimote != null) {

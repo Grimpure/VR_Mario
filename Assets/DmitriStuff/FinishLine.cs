@@ -33,14 +33,18 @@ public class FinishLine : MonoBehaviour
         finished = false;
     }
 
+    public void ResetIt()
+    {
+        //When pressing space, the car's position will go to the last position of the last checkpoint's block.
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+            gameObject.transform.position = lastblock;
+        //}
+    }
 
     void Update()
     {
-        //When pressing space, the car's position will go to the last position of the last checkpoint's block.
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            gameObject.transform.position = lastblock;
-        } 
+        //ResetIt();
         
         //Text for the laps on the scoreboard. (Made a draw version of the max laps. So its not working yet. FIX ME PLZ!)
         tmp_Laps.text = "Lap: " + i_Laps.ToString() + " / 5";
