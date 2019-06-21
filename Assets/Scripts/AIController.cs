@@ -46,25 +46,25 @@ public class AIController : MonoBehaviour
                 
                 if (Direction() == "left")
                 {
-                    if(transform.rotation.y > 0)
+                    if (transform.rotation.y < -180)
                     {
-                        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(transform.rotation.x, transform.rotation.y - 1, transform.rotation.z), -rotAngle * speed);
+                        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(transform.rotation.x, 0, transform.rotation.z), -rotAngle * speed);
                     }
                     else
                     {
-                        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(transform.rotation.x, transform.rotation.y - 1, transform.rotation.z), rotAngle * speed);
+                        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(transform.rotation.x, transform.rotation.y - 1, transform.rotation.z), -rotAngle * speed);                
                     }
                 }
 
                 else if (Direction() == "right")
                 {
-                    if (transform.rotation.y > 0)
+                    if (transform.rotation.y > 180)
                     {
-                        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(transform.rotation.x, transform.rotation.y + 1, transform.rotation.z), -rotAngle * speed);
+                        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(transform.rotation.x, 0, transform.rotation.z), -rotAngle * speed);
                     }
                     else
                     {
-                        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(transform.rotation.x, transform.rotation.y + 1, transform.rotation.z), rotAngle * speed);
+                        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(transform.rotation.x, transform.rotation.y + 1, transform.rotation.z), -rotAngle * speed);
                     }
                 }
             }
